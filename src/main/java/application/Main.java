@@ -16,8 +16,8 @@ public class Main implements Reader {
 
 
     public static void main(String[] args) throws IOException {
-        final List<UnknownWord> words = new Main().read(UNKNOWN_WORDS_PATH);
-        while (true) start(words);
+        while (true)
+            start(new Main().read(UNKNOWN_WORDS_PATH));
     }
 
     private static void start(final List<UnknownWord> words) {

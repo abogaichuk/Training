@@ -6,32 +6,42 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static java.lang.System.*;
 import static java.util.Objects.isNull;
 
 public class DefaultLearn implements Learn {
-    private final Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(in);
 
     @Override
     public void process(List<UnknownWord> words) {
         words = setWords(words);
+        long start = currentTimeMillis();
         sc.nextLine();
+        UnknownWord previous = null;
         while (true) {
             UnknownWord word = getRandomWord(words);
             if (isNull(word))
                 break;
             printQuestion(word);
             String input = sc.nextLine();
-            printAnswer(word);
-            if ("d".equals(input))
+
+            if (input.contains("r") && previous != null) {
+              words.add(previous);
+            }
+
+            if (input.contains("d"))
                 words.remove(word);
             else if ("exit".equals(input))
                 break;
+            previous = word;
+            printAnswer(word);
         }
+        out.println("time: " + (currentTimeMillis() - start) / 1000 / 60 + " minutes");
     }
 
     protected void printQuestion(UnknownWord word) {
-        System.out.println();
-        System.out.println(word.getWord() + " ----- " + word.getTranscription());
+        out.println();
+        out.println(word.getWord() + " ----- " + word.getTranscription());
     }
 
     private UnknownWord getRandomWord(List<UnknownWord> words) {
@@ -45,14 +55,14 @@ public class DefaultLearn implements Learn {
         String answer = "вірна відповідь: " + word.getTranslate();
         if (word.getWithPrefix() != null && !word.getWithPrefix().isEmpty())
             answer = answer + ". With prefix: "+ word.getWithPrefix();
-        System.out.println(answer);
-        System.out.println("----------------------------------------------");
+        out.println(answer);
+        out.println("----------------------------------------------");
     }
 
     private List<UnknownWord> setWords(List<UnknownWord> words) {
-        System.out.println("enter from value: ");
+        out.println("enter from value: ");
         int from = sc.nextInt();
-        System.out.println("enter to value: ");
+        out.println("enter to value: ");
         int to = sc.nextInt();
         to = to >= words.size() ? words.size() -1 : to;
         return isRightValues(from, to, words.size()) ? words.subList(from, to) : words;
